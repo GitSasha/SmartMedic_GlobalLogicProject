@@ -1,0 +1,1 @@
+# SmartMedic_GlobalLogicProject
