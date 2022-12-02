@@ -28,23 +28,15 @@
   Change WiFi ssid, pass, and Blynk auth token to run :)
   Feel free to apply it to any other example. It's simple!
  *************************************************************/
-//Строки BLYNK_TEMPLATE_ID и BLYNK_DEVICE_NAME должны быть в первых строках скетча
-//Sergey:
-//#define BLYNK_TEMPLATE_ID "TMPLagn1YBYy"
-//#define BLYNK_DEVICE_NAME "TmpHumKardO2"
-//#define BLYNK_AUTH_TOKEN "SiLFKarLQ8ARVIgZoeTcrc1ZE3XYWTRn"
 
-//Alexandra:
 #define BLYNK_TEMPLATE_ID "TMPLB8vzSAGz"
-#define BLYNK_DEVICE_NAME "MedicDevice01"
-//#define BLYNK_AUTH_TOKEN "U_HdEf97K0nvHJ6IEn73gKNUX1YUiNbe"
+#define BLYNK_DEVICE_NAME "SmartMedicDevice"
 
 #define BLYNK_PRINT Serial
 
 //Includes:-------------------------------------------------
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
-
 #include "DHTesp.h"
 #include <SPI.h>
 #include <Adafruit_GFX.h>
@@ -54,27 +46,20 @@
 #include <Wire.h>
 #include "MAX30105.h"
 #include "heartRate.h"
-#include <OneWire.h>// библиотека для работы с протоколом 1-Wire
-#include <DallasTemperature.h>// библиотека для работы с датчиком DS18B20
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 //Defines Blynk-------------------------------------------------
 
-//Sergey:
-//char auth[] = "SiLFKarLQ8ARVIgZoeTcrc1ZE3XYWTRn";//Ввод токена
-
-//Alexandra
-char auth[] = "U_HdEf97K0nvHJ6IEn73gKNUX1YUiNbe";
+char auth[] = "TOKEN";
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-//char ssid[] = "Anna_2_4GHz";
-//char ssid[] = "KOT";
-//char pass[] = "55555555";
-char ssid[] = "ffn";
-char pass[] = "55555555";
+char ssid[] = "LOGIN";
+char pass[] = "PASSWORD";
 
 //Defines-------------------------------------------------
-#define ONE_WIRE_BUS 2 //Подключение ножки данных 18В20
+#define ONE_WIRE_BUS 2
 #define NUMFLAKES 10
 #define XPOS 0
 #define YPOS 1
@@ -87,8 +72,8 @@ char pass[] = "55555555";
 BH1750 lightMeter;
 DHTesp dht;
 MAX30105 particleSensor;
-OneWire oneWire(ONE_WIRE_BUS);// создаём объект для работы с библиотекой OneWire
-DallasTemperature sensors(&oneWire);// создадим объект для работы с библиотекой DallasTemperature
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
 
 //Variables---------------------------------------
 int adc_light;
@@ -184,14 +169,14 @@ void setup()
   
   //18B20------------------------------------------------------------------
    sensors.begin();
-  //sensor.setResolution(12);// устанавливаем разрешение датчика от 9 до 12 бит
+  //sensor.setResolution(12);
   
 }
 
 void loop(){
   
   //  for (int i=0; i<200; i=i+1){
-  //    adc_light = analogRead(A0);//Передача на телефон уровня освещенности A0
+  //    adc_light = analogRead(A0);
   //    Blynk.virtualWrite(V0, adc_light);
   //  }
   
@@ -234,7 +219,7 @@ void loop(){
   display.print(lux);
   
   //Merge 30102 Bpm -------------------------------------------------
-  for (int i = 0; i<200; i++)//Делаем 200 замеров точек для выделения пульса
+  for (int i = 0; i<200; i++)
   {
         long irValue = particleSensor.getIR();
     if (checkForBeat(irValue) == true)
@@ -261,7 +246,7 @@ void loop(){
   }
   
   //MAX30102 to LCD -------------------------------------------------
-  //После 200 замеров показываем пульс BPM
+
   Serial.print("Avg BPM=");
   Serial.println(beatsPerMinute);//V3
   
@@ -277,9 +262,9 @@ void loop(){
   }
   
   //18B20 to LCD -------------------------------------------------  
-  float temperature_1820;// переменная для хранения температуры
-  sensors.requestTemperatures();// Send the command to get temperatures// отправляем запрос на измерение температуры
-  temperature_1820 = sensors.getTempCByIndex(0);// считываем данные из регистра датчика
+  float temperature_1820;
+  sensors.requestTemperatures();// Send the command to get temperatures
+  temperature_1820 = sensors.getTempCByIndex(0);
 
   Serial.print("Temperature_body=");
   Serial.println(temperature_1820);
@@ -289,7 +274,7 @@ void loop(){
   display.setCursor(24,30);
   display.print(temperature_1820);
   
-  display.display();//Показать картинку
+  display.display();
   
   //TX to Blynk-------------------------------------------------
   Blynk.virtualWrite(V0,humidity);
@@ -297,8 +282,6 @@ void loop(){
   Blynk.virtualWrite(V2,lux);
   Blynk.virtualWrite(V3,beatsPerMinute);
   Blynk.virtualWrite(V4,temperature_1820);
-  //Blynk.virtualWrite(V5,temperature);    
-  Blynk.virtualWrite(V5,1);  // ID користувача
   
   Blynk.run();
 }
